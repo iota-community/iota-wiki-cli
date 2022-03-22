@@ -15,6 +15,8 @@ Configure the utility with a `config.json`. See a example [`here`](./config.exam
 # TOC
 
 <!-- toc -->
+* [Release](#release)
+* [TOC](#toc)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -25,7 +27,7 @@ $ npm install -g @iota-community/iota-wiki-cli
 $ iota-wiki-cli COMMAND
 running command...
 $ iota-wiki-cli (-v|--version|version)
-@iota-community/iota-wiki-cli/1.7.0 linux-x64 node-v16.13.1
+@iota-community/iota-wiki-cli/1.7.1 linux-x64 node-v16.13.1
 $ iota-wiki-cli --help [COMMAND]
 USAGE
   $ iota-wiki-cli COMMAND
@@ -83,7 +85,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
 
 ## `iota-wiki-cli setup`
 
