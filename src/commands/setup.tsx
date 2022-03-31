@@ -6,7 +6,7 @@ import MultiSelect, { ListedItem } from 'ink-multi-select';
 import { writeConfig } from '../utils';
 import { readdirSync } from 'fs';
 import { exec } from 'shelljs';
-import { useStdout } from 'ink';
+// import { useStdout } from 'ink';
 
 // TODO use actual list from Wiki
 const typeOptions = [
@@ -109,7 +109,7 @@ interface InputComponentProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  onSubmit: (value: string) => void;
+  // onSubmit: (value: string) => void;
 }
 
 const InputComponent: FC<InputComponentProps> = (props) => {
@@ -124,7 +124,7 @@ const InputComponent: FC<InputComponentProps> = (props) => {
           showCursor={isFocused}
           value={props.value}
           onChange={props.onChange}
-          onSubmit={props.onSubmit}
+          // onSubmit={props.onSubmit}
         />
       </Text>
     </Box>
@@ -134,7 +134,7 @@ const InputComponent: FC<InputComponentProps> = (props) => {
 interface SelectComponentProps {
   label: string;
   items: ListedItem[];
-  onSubmit?: (items: ListedItem[]) => void;
+  // onSubmit?: (items: ListedItem[]) => void;
   onChange?: (items: ListedItem[]) => void;
 }
 
@@ -158,7 +158,12 @@ const SelectComponent: FC<SelectComponentProps> = (props) => {
     <Box flexDirection='column'>
       <Text dimColor={!isFocused}>
         <Text>{props.label}: </Text>
-        <Text>{value.map((item) => item.label).join(', ')}</Text>
+        <Text>
+          {value
+            .map((item) => item.label)
+            .sort()
+            .join(', ')}
+        </Text>
       </Text>
       <Box
         flexDirection='column'
@@ -171,7 +176,7 @@ const SelectComponent: FC<SelectComponentProps> = (props) => {
           selected={value}
           onSelect={onSelect}
           onUnselect={onUnselect}
-          onSubmit={props.onSubmit}
+          // onSubmit={props.onSubmit}
         />
         <Text dimColor={true} italic={true}>
           Press SPACE to select
@@ -231,12 +236,14 @@ const SetupComponent: FC = () => {
   const getValues = (items) => items.map((item) => item.value);
 
   useEffect(() => {
-    setTags([
-      ...getValues(typeTags),
-      ...getValues(topicTags),
-      ...getValues(frameworkTags),
-      ...getValues(languageTags),
-    ]);
+    setTags(
+      [
+        ...getValues(typeTags),
+        ...getValues(topicTags),
+        ...getValues(frameworkTags),
+        ...getValues(languageTags),
+      ].sort(),
+    );
   }, [typeTags, topicTags, frameworkTags, languageTags]);
 
   useEffect(() => {
@@ -245,6 +252,7 @@ const SetupComponent: FC = () => {
 
   useInput((_, key) => {
     if (key.escape) process.exit();
+    if (key.return) focusNext();
   });
 
   return (
@@ -253,43 +261,43 @@ const SetupComponent: FC = () => {
         label='Title'
         value={title}
         onChange={setTitle}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <InputComponent
         label='Description'
         value={description}
         onChange={setDescription}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <InputComponent
         label='Preview image path'
         value={preview}
         onChange={setPreview}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Type Tags'
         items={typeOptions}
         onChange={setTypeTags}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Topic Tags'
         items={topicOptions}
         onChange={setTopicTags}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Framework Tags'
         items={frameworkOptions}
         onChange={setFrameworkTags}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Language Tags'
         items={languageOptions}
         onChange={setLanguageTags}
-        onSubmit={focusNext}
+        // onSubmit={focusNext}
       />
       <SubmitComponent
         title={title}
