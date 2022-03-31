@@ -3,10 +3,106 @@ import { Command } from 'clipanion';
 import { render, Box, Text, useFocus, useFocusManager, useInput } from 'ink';
 import TextInput from 'ink-text-input';
 import MultiSelect, { ListedItem } from 'ink-multi-select';
+import { writeConfig } from '../utils';
+import { readdirSync } from 'fs';
+import { exec } from 'shelljs';
+import { useStdout } from 'ink';
 
-const tagsList = [
-  { label: 'Tag 1', value: 'tag1' },
-  { label: 'Tag 2', value: 'tag2' },
+// TODO use actual list from Wiki
+const typeOptions = [
+  {
+    label: 'Text',
+    value: 'text',
+  },
+  {
+    label: 'Video',
+    value: 'video',
+  },
+];
+
+const topicOptions = [
+  {
+    value: 'favorite',
+    label: 'Favorite',
+  },
+  {
+    value: 'gettingstarted',
+    label: 'Getting Started',
+  },
+  {
+    value: 'integrationservices',
+    label: 'Integration Services',
+  },
+  {
+    value: 'livecoding',
+    label: 'Live Coding',
+  },
+  {
+    value: 'nft',
+    label: 'NFT',
+  },
+  {
+    value: 'supply_chain',
+    label: 'Supply Chain',
+  },
+];
+
+const frameworkOptions = [
+  {
+    value: 'client',
+    label: 'Client',
+  },
+  {
+    value: 'identity',
+    label: 'Identity',
+  },
+  {
+    value: 'iscp',
+    label: 'Smart Contracts',
+  },
+  {
+    value: 'streams',
+    label: 'Streams',
+  },
+  {
+    value: 'stronghold',
+    label: 'Stronghold',
+  },
+  {
+    value: 'wallet',
+    label: 'Wallet',
+  },
+];
+
+const languageOptions = [
+  {
+    value: 'c',
+    label: 'C',
+  },
+  {
+    value: 'go',
+    label: 'Go',
+  },
+  {
+    value: 'java',
+    label: 'Java',
+  },
+  {
+    value: 'node_js',
+    label: 'Node.js',
+  },
+  {
+    value: 'python',
+    label: 'Python',
+  },
+  {
+    value: 'rust',
+    label: 'Rust',
+  },
+  {
+    value: 'wasm',
+    label: 'Wasm',
+  },
 ];
 
 interface InputComponentProps {
@@ -80,27 +176,54 @@ const SelectComponent: FC<SelectComponentProps> = (props) => {
   );
 };
 
-interface SubmitComponentProps {
-  value: string;
+export interface SubmitComponentProps {
+  title: string;
+  description: string;
+  preview: string;
+  tags: Array<string>;
+  sourceUrl: string;
+  firstPage: string;
 }
 
 const SubmitComponent: FC<SubmitComponentProps> = (props) => {
   const { isFocused } = useFocus();
 
+  writeConfig(props);
+
   return isFocused ? (
     <Box margin={1} padding={1} borderStyle={'single'} borderColor='green'>
-      <Text color='green'>{props.value}</Text>
+      <Text color='green'>
+        Config file docusaurus.config.js was created/initialized sucessfully
+      </Text>
     </Box>
   ) : null;
 };
+
+function getFirstPage() {
+  // TODO First check if a sidebar with valid content exist, else:
+  const files = readdirSync('documentation/docs');
+  return files[0].replace(/\.[^/.]+$/, '');
+}
 
 const SetupComponent: FC = () => {
   const { focusNext } = useFocusManager();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
-  const [repository, setRepository] = useState('');
+  const [preview, setPreview] = useState('');
   const [tags, setTags] = useState([]);
+  const [sourceUrl] = useState(
+    exec('git config --get remote.origin.url', { silent: true }).replace(
+      '\n',
+      '',
+    ),
+  );
+  const [firstPage] = useState(getFirstPage());
+
+  const updateTags = (items) => {
+    const newTags = items.map((item) => item.value);
+    setTags([...tags, ...newTags]);
+    focusNext();
+  };
 
   useEffect(() => {
     focusNext();
@@ -126,32 +249,37 @@ const SetupComponent: FC = () => {
       />
       <InputComponent
         label='Preview image path'
-        value={image}
-        onChange={setImage}
-        onSubmit={focusNext}
-      />
-      <InputComponent
-        label='Repository URL'
-        value={repository}
-        onChange={setRepository}
+        value={preview}
+        onChange={setPreview}
         onSubmit={focusNext}
       />
       <SelectComponent
-        label='Applicable tags'
-        items={tagsList}
-        onSubmit={(items) => {
-          setTags(items);
-          focusNext();
-        }}
+        label='Type Tags'
+        items={typeOptions}
+        onSubmit={updateTags}
+      />
+      <SelectComponent
+        label='Topic Tags'
+        items={topicOptions}
+        onSubmit={updateTags}
+      />
+      <SelectComponent
+        label='Framework Tags'
+        items={frameworkOptions}
+        onSubmit={updateTags}
+      />
+      <SelectComponent
+        label='Language Tags'
+        items={languageOptions}
+        onSubmit={updateTags}
       />
       <SubmitComponent
-        value={JSON.stringify({
-          title,
-          description,
-          image,
-          repository,
-          tags,
-        })}
+        title={title}
+        description={description}
+        preview={preview}
+        tags={tags}
+        sourceUrl={sourceUrl}
+        firstPage={firstPage}
       />
     </Box>
   );
