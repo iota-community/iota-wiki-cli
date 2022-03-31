@@ -134,7 +134,8 @@ const InputComponent: FC<InputComponentProps> = (props) => {
 interface SelectComponentProps {
   label: string;
   items: ListedItem[];
-  onSubmit: (items: ListedItem[]) => void;
+  onSubmit?: (items: ListedItem[]) => void;
+  onChange?: (items: ListedItem[]) => void;
 }
 
 const SelectComponent: FC<SelectComponentProps> = (props) => {
@@ -148,6 +149,10 @@ const SelectComponent: FC<SelectComponentProps> = (props) => {
   const onUnselect = (item) => {
     setValue(value.filter((o) => o !== item));
   };
+
+  useEffect(() => {
+    props.onChange(value);
+  }, [value]);
 
   return (
     <Box flexDirection='column'>
@@ -210,6 +215,10 @@ const SetupComponent: FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [preview, setPreview] = useState('');
+  const [typeTags, setTypeTags] = useState([]);
+  const [topicTags, setTopicTags] = useState([]);
+  const [frameworkTags, setFrameworkTags] = useState([]);
+  const [languageTags, setLanguageTags] = useState([]);
   const [tags, setTags] = useState([]);
   const [sourceUrl] = useState(
     exec('git config --get remote.origin.url', { silent: true }).replace(
@@ -219,11 +228,16 @@ const SetupComponent: FC = () => {
   );
   const [firstPage] = useState(getFirstPage());
 
-  const updateTags = (items) => {
-    const newTags = items.map((item) => item.value);
-    setTags([...tags, ...newTags]);
-    focusNext();
-  };
+  const getValues = (items) => items.map((item) => item.value);
+
+  useEffect(() => {
+    setTags([
+      ...getValues(typeTags),
+      ...getValues(topicTags),
+      ...getValues(frameworkTags),
+      ...getValues(languageTags),
+    ]);
+  }, [typeTags, topicTags, frameworkTags, languageTags]);
 
   useEffect(() => {
     focusNext();
@@ -256,22 +270,26 @@ const SetupComponent: FC = () => {
       <SelectComponent
         label='Type Tags'
         items={typeOptions}
-        onSubmit={updateTags}
+        onChange={setTypeTags}
+        onSubmit={focusNext}
       />
       <SelectComponent
         label='Topic Tags'
         items={topicOptions}
-        onSubmit={updateTags}
+        onChange={setTopicTags}
+        onSubmit={focusNext}
       />
       <SelectComponent
         label='Framework Tags'
         items={frameworkOptions}
-        onSubmit={updateTags}
+        onChange={setFrameworkTags}
+        onSubmit={focusNext}
       />
       <SelectComponent
         label='Language Tags'
         items={languageOptions}
-        onSubmit={updateTags}
+        onChange={setLanguageTags}
+        onSubmit={focusNext}
       />
       <SubmitComponent
         title={title}
