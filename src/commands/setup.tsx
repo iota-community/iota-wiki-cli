@@ -6,7 +6,6 @@ import MultiSelect, { ListedItem } from 'ink-multi-select';
 import { writeConfig } from '../utils';
 import { readdirSync } from 'fs';
 import { exec } from 'shelljs';
-// import { useStdout } from 'ink';
 
 // TODO use actual list from Wiki
 const typeOptions = [
@@ -109,7 +108,6 @@ interface InputComponentProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  // onSubmit: (value: string) => void;
 }
 
 const InputComponent: FC<InputComponentProps> = (props) => {
@@ -124,7 +122,6 @@ const InputComponent: FC<InputComponentProps> = (props) => {
           showCursor={isFocused}
           value={props.value}
           onChange={props.onChange}
-          // onSubmit={props.onSubmit}
         />
       </Text>
     </Box>
@@ -134,7 +131,6 @@ const InputComponent: FC<InputComponentProps> = (props) => {
 interface SelectComponentProps {
   label: string;
   items: ListedItem[];
-  // onSubmit?: (items: ListedItem[]) => void;
   onChange?: (items: ListedItem[]) => void;
 }
 
@@ -176,7 +172,6 @@ const SelectComponent: FC<SelectComponentProps> = (props) => {
           selected={value}
           onSelect={onSelect}
           onUnselect={onUnselect}
-          // onSubmit={props.onSubmit}
         />
         <Text dimColor={true} italic={true}>
           Press SPACE to select
@@ -257,47 +252,36 @@ const SetupComponent: FC = () => {
 
   return (
     <Box flexDirection='column'>
-      <InputComponent
-        label='Title'
-        value={title}
-        onChange={setTitle}
-        // onSubmit={focusNext}
-      />
+      <InputComponent label='Title' value={title} onChange={setTitle} />
       <InputComponent
         label='Description'
         value={description}
         onChange={setDescription}
-        // onSubmit={focusNext}
       />
       <InputComponent
         label='Preview image path'
         value={preview}
         onChange={setPreview}
-        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Type Tags'
         items={typeOptions}
         onChange={setTypeTags}
-        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Topic Tags'
         items={topicOptions}
         onChange={setTopicTags}
-        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Framework Tags'
         items={frameworkOptions}
         onChange={setFrameworkTags}
-        // onSubmit={focusNext}
       />
       <SelectComponent
         label='Language Tags'
         items={languageOptions}
         onChange={setLanguageTags}
-        // onSubmit={focusNext}
       />
       <SubmitComponent
         title={title}
