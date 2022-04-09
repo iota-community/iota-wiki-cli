@@ -17,7 +17,7 @@
     "format": "prettier --write .",
     "lint": "eslint --cache --fix .",
     "postinstall": "husky install",
-    "prepack": "pisnt --disable && yarn build",
+    "prepack": "pinst --disable && yarn build",
     "postpack": "pinst --enable"
   },
   "dependencies": {
