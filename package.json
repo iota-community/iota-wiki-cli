@@ -50,11 +50,10 @@
     "typescript": "^4.4.3"
   },
   "files": [
-    "internal",
-    "dist"
+    "dist",
+    "internal"
   ],
   "workspaces": [
-    "internal",
     "test/*"
   ],
   "types": "dist/index.d.ts",
