@@ -50,8 +50,8 @@
     "typescript": "^4.4.3"
   },
   "files": [
-    "/dist",
-    "/internal"
+    "dist/*",
+    "internal/*"
   ],
   "workspaces": [
     "internal",
