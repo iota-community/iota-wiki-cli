@@ -1,4 +1,3 @@
-// @ts-check
 const path = require('path');
 const config = require(path.resolve(
   process.cwd(),
@@ -6,7 +5,6 @@ const config = require(path.resolve(
   './docusaurus.config.js',
 ));
 
-/** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'IOTA Wiki',
   tagline: 'The complete reference for IOTA',
