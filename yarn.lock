@@ -1885,7 +1885,7 @@ __metadata:
     eslint-plugin-react: ^7.29.4
     husky: ">=6"
     ink: ^3.2.0
-    ink-multi-select: ^2.0.0
+    ink-multi-select: "dr-electron/ink-multi-select#fix/dependencies"
     ink-select-input: ^4.2.1
     ink-spinner: ^4.0.3
     ink-text-input: ^4.0.3
@@ -6531,15 +6531,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ink-multi-select@npm:^2.0.0":
+"ink-multi-select@dr-electron/ink-multi-select#fix/dependencies":
   version: 2.0.0
-  resolution: "ink-multi-select@npm:2.0.0"
+  resolution: "ink-multi-select@https://github.com/dr-electron/ink-multi-select.git#commit=640cd38caf53f701d8034833d1e1b921f2fb66f9"
   dependencies:
     arr-rotate: ^1.0.0
     figures: ^2.0.0
+    ink: ^3.0.0
     lodash.isequal: ^4.5.0
     prop-types: ^15.5.10
-  checksum: c28804980f7a6b1f7b86c02a264a5d10c0f9bc21090b8b2608c7e2a488b29e229327fc166d2e5e8898b131aa3cd1f40bc4e3e04e7774bd1824f898655b88356a
+    react: ^16.8.2
+  checksum: c8a870c3698e023371c3970c6d6133462bc95938d3029b22d26ebf5738b2f16e28979aca46831db7b20d3411419018515785af55c68639db86456d9bf4c5681e
   languageName: node
   linkType: hard
 
@@ -6582,7 +6584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ink@npm:^3.2.0":
+"ink@npm:^3.0.0, ink@npm:^3.2.0":
   version: 3.2.0
   resolution: "ink@npm:3.2.0"
   dependencies:
@@ -9470,6 +9472,17 @@ plugin-image-zoom@flexanalytics/plugin-image-zoom:
   peerDependencies:
     react: ">=15"
   checksum: 7daae084bf64531eb619cc5f4cc40ce5ae0a541b64f71d74ec71a38cbf6130ebdbb7cf38f157303fad5846deec259401f96c4d6c7386466dcc989719e01f9aaa
+  languageName: node
+  linkType: hard
+
+"react@npm:^16.8.2":
+  version: 16.14.0
+  resolution: "react@npm:16.14.0"
+  dependencies:
+    loose-envify: ^1.1.0
+    object-assign: ^4.1.1
+    prop-types: ^15.6.2
+  checksum: 8484f3ecb13414526f2a7412190575fc134da785c02695eb92bb6028c930bfe1c238d7be2a125088fec663cc7cda0a3623373c46807cf2c281f49c34b79881ac
   languageName: node
   linkType: hard
 
