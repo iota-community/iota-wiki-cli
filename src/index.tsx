@@ -6,6 +6,8 @@ import { Start } from './commands/start';
 import { Build } from './commands/build';
 import { Setup } from './commands/tutorial/configure';
 import { Default } from './commands/default';
+import { VersioningSelector } from './commands/versioning';
+import { VersioningList } from './commands/versioning/list';
 
 const args = process.argv.slice(2);
 
@@ -21,4 +23,6 @@ cli.register(Start);
 cli.register(Build);
 cli.register(Setup);
 cli.register(Default);
+cli.register(VersioningSelector);
+cli.register(VersioningList);
 cli.runExit(args);

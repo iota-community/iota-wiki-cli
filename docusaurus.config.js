@@ -8,9 +8,6 @@ module.exports = {
         id: 'docs',
         path: path.resolve(__dirname, './docs'),
         sidebarPath: path.resolve(__dirname, './sidebars.js'),
-        disableVersioning: false,
-        includeCurrentVersion: true,
-        lastVersion: undefined,
         versions: {
           current: {
             label: 'Android SDK v2.0.0 (WIP)',
@@ -23,7 +20,6 @@ module.exports = {
             banner: 'unmaintained',
           },
         },
-        onlyIncludeVersions: ['current', '1.0.0', '2.0.0'],
       },
     ],
     [

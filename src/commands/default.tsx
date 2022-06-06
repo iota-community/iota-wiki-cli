@@ -22,6 +22,11 @@ const DefaultComponent: FC<DefaultComponentProps> = (props) => {
         'Configure the tutorial settings to properly list it on the IOTA Wiki.',
       value: 'configure',
     },
+    {
+      label:
+        'Tool to version your docs and add them to the Wiki.',
+      value: 'versioning',
+    },
   ];
 
   const onSelect = (item) => {
@@ -33,6 +38,9 @@ const DefaultComponent: FC<DefaultComponentProps> = (props) => {
     }
     if (item.value === 'configure') {
       props.command.cli.run(['tutorial', 'configure']);
+    }
+    if (item.value === 'versioning') {
+      props.command.cli.run(['versioning']);
     }
   };
 

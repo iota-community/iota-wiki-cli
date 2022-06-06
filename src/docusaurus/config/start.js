@@ -42,7 +42,7 @@ module.exports = {
     announcementBar: {
       id: 'preview',
       content:
-        'This is a local preview. Please find available routes <a href="/404">here</a>.',
+        'This is a local previewfgbb. Please find available routes <a href="/404">here</a>.',
       isCloseable: false,
     },
     image: 'img/iota-wiki.png',
