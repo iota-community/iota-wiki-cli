@@ -25,7 +25,7 @@ import {
   stringLiteral,
 } from '@babel/types';
 import { UserOptions as TutorialOptions } from '@iota-wiki/plugin-tutorial';
-import { getPlugins, setPlugins } from '../../parse';
+import { getPlugins, writeConfig } from '../../parse';
 import { parse } from '@babel/parser';
 
 interface InputComponentProps {
@@ -133,7 +133,7 @@ type TagCategories = Map<string, Array<Tag>>;
 
 interface SetupComponentProps {
   defaultOptions: Partial<TutorialOptions>;
-  addPlugin: (options: TutorialOptions) => void;
+  setPlugin: (options: TutorialOptions) => void;
 }
 
 const SetupComponent: FC<SetupComponentProps> = (props) => {
@@ -224,7 +224,7 @@ const SetupComponent: FC<SetupComponentProps> = (props) => {
     setOptions({ ...options, [option]: value });
   };
 
-  const addPlugin = () => {
+  const setPlugin = () => {
     // TODO: Handle invalid or missing required options.
     const normalizedOptions = Object.assign<
       TutorialOptions,
@@ -238,7 +238,7 @@ const SetupComponent: FC<SetupComponentProps> = (props) => {
       options,
     );
 
-    props.addPlugin(normalizedOptions);
+    props.setPlugin(normalizedOptions);
     process.exit();
   };
 
@@ -285,7 +285,7 @@ const SetupComponent: FC<SetupComponentProps> = (props) => {
             items={[
               {
                 label: 'Write the config to file.',
-                value: addPlugin,
+                value: setPlugin,
               },
               {
                 label: 'Exit without writing config to file.',
@@ -343,55 +343,52 @@ export class Setup extends Command {
     const ast = parse(fs.readFileSync(filePath, 'utf-8'));
     const plugins = getPlugins(ast);
 
-    const tutorialPlugins = plugins.elements.reduce(
-      (plugins, element, index) => {
-        if (element.type === 'ArrayExpression') {
-          const pluginElement = element.elements[0];
+    const tutorialPlugins = plugins.reduce((plugins, element, index) => {
+      if (element.type === 'ArrayExpression') {
+        const pluginElement = element.elements[0];
 
-          if (
-            pluginElement.type !== 'StringLiteral' ||
-            pluginElement.value !== '@iota-wiki/plugin-tutorial'
-          ) {
-            return plugins;
-          }
-
-          const optionsElement = element.elements[1];
-
-          if (optionsElement.type !== 'ObjectExpression') return plugins;
-
-          const options = optionsElement.properties.reduce<
-            Partial<TutorialOptions>
-          >((properties, property) => {
-            if (
-              property.type === 'ObjectProperty' &&
-              property.key.type === 'Identifier'
-            ) {
-              if (property.value.type === 'StringLiteral') {
-                properties[property.key.name] = property.value.value;
-              }
-
-              if (
-                property.key.name === 'tags' &&
-                property.value.type === 'ArrayExpression'
-              ) {
-                properties.tags = property.value.elements.reduce<string[]>(
-                  (tags, tag) => {
-                    if (tag.type === 'StringLiteral') tags.push(tag.value);
-                    return tags;
-                  },
-                  [],
-                );
-              }
-            }
-            return properties;
-          }, {});
-
-          return plugins.set(index, options);
+        if (
+          pluginElement.type !== 'StringLiteral' ||
+          pluginElement.value !== '@iota-wiki/plugin-tutorial'
+        ) {
+          return plugins;
         }
-        return plugins;
-      },
-      new Map<number, Partial<TutorialOptions>>(),
-    );
+
+        const optionsElement = element.elements[1];
+
+        if (optionsElement.type !== 'ObjectExpression') return plugins;
+
+        const options = optionsElement.properties.reduce<
+          Partial<TutorialOptions>
+        >((properties, property) => {
+          if (
+            property.type === 'ObjectProperty' &&
+            property.key.type === 'Identifier'
+          ) {
+            if (property.value.type === 'StringLiteral') {
+              properties[property.key.name] = property.value.value;
+            }
+
+            if (
+              property.key.name === 'tags' &&
+              property.value.type === 'ArrayExpression'
+            ) {
+              properties.tags = property.value.elements.reduce<string[]>(
+                (tags, tag) => {
+                  if (tag.type === 'StringLiteral') tags.push(tag.value);
+                  return tags;
+                },
+                [],
+              );
+            }
+          }
+          return properties;
+        }, {});
+
+        return plugins.set(index, options);
+      }
+      return plugins;
+    }, new Map<number, Partial<TutorialOptions>>());
 
     let pluginIndex: number | undefined;
     const setPluginIndex = (index) => (pluginIndex = index);
@@ -404,7 +401,7 @@ export class Setup extends Command {
 
       items.push({
         label: 'Add a new tutorial...',
-        value: plugins.elements.length,
+        value: plugins.length,
       });
 
       const { waitUntilExit } = render(
@@ -416,10 +413,10 @@ export class Setup extends Command {
       if (pluginIndex === undefined) process.exit();
     }
 
-    const addPlugin = (options: TutorialOptions) => {
+    const setPlugin = (options: TutorialOptions) => {
       const { tags, ...rest } = options;
 
-      plugins.elements[pluginIndex] = arrayExpression([
+      plugins[pluginIndex] = arrayExpression([
         stringLiteral('@iota-wiki/plugin-tutorial'),
         objectExpression([
           ...Object.entries(rest).map(([key, value]) =>
@@ -432,13 +429,13 @@ export class Setup extends Command {
         ]),
       ]);
 
-      setPlugins(filePath, ast);
+      writeConfig(filePath, ast);
     };
 
     const { waitUntilExit } = render(
       <SetupComponent
         defaultOptions={tutorialPlugins.get(pluginIndex) || {}}
-        addPlugin={addPlugin}
+        setPlugin={setPlugin}
       />,
     );
 
