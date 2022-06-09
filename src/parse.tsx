@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { ParseResult } from '@babel/parser';
+import { parse, ParseResult } from '@babel/parser';
 import {
   arrayExpression,
   assignmentExpression,
@@ -10,8 +10,10 @@ import {
   memberExpression,
   ObjectExpression,
   objectExpression,
+  ObjectProperty,
   objectProperty,
   PatternLike,
+  SpreadElement,
   Statement,
 } from '@babel/types';
 import generator from '@babel/generator';
@@ -62,7 +64,9 @@ function tryPlugins(
   }
 }
 
-export function getPlugins(ast: ParseResult<File>) {
+export type Plugin = Expression | SpreadElement;
+
+export function getPlugins(ast: ParseResult<File>): Plugin[] {
   const config = getConfig(ast.program.body);
 
   // TODO: Allow config exported via variable assigned to `module.exports`.
@@ -85,6 +89,60 @@ export function getPlugins(ast: ParseResult<File>) {
     throw 'Plugins property needs to be an array.';
 
   return plugins.elements;
+}
+
+export type DocsPlugin = ObjectExpression['properties'];
+
+export function getDocsPlugins(plugins: Plugin[]): DocsPlugin[] {
+  return plugins.reduce((docsPlugins, plugin) => {
+    if (plugin.type === 'ArrayExpression') {
+      const [name, options] = plugin.elements;
+
+      if (
+        name.type === 'StringLiteral' &&
+        name.value === '@docusaurus/plugin-content-docs' &&
+        options.type === 'ObjectExpression'
+      ) {
+        docsPlugins.push(options.properties);
+      }
+    }
+    return docsPlugins;
+  }, []);
+}
+
+export function getDocsPluginId(plugin: DocsPlugin): string {
+  const id = plugin.find(
+    (property): property is ObjectProperty =>
+      property.type === 'ObjectProperty' &&
+      property.key.type === 'Identifier' &&
+      property.key.name === 'id',
+  );
+
+  if (id?.value.type === 'StringLiteral') {
+    return id.value.value;
+  }
+}
+
+export type DocsPluginVersion = ObjectProperty;
+
+export function getDocsPluginVersions(plugin: DocsPlugin): DocsPluginVersion[] {
+  const versions = plugin.find(
+    (property): property is ObjectProperty =>
+      property.type === 'ObjectProperty' &&
+      property.key.type === 'Identifier' &&
+      property.key.name === 'versions',
+  );
+
+  if (versions?.value.type === 'ObjectExpression') {
+    return versions.value.properties.filter(
+      (property): property is ObjectProperty =>
+        property.type === 'ObjectProperty',
+    );
+  }
+}
+
+export function parseConfig(filePath: string) {
+  return parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
 export function writeConfig(filePath: string, ast: ParseResult<File>) {
